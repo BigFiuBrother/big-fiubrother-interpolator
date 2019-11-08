@@ -1,0 +1,6 @@
+big-fiubrother-interpolator-venv/
+big_fiubrother_interpolator/**/__pycache__
+big_fiubrother_interpolator.egg-info/
+dist/
+build/
+tmp/

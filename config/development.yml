@@ -1,0 +1,17 @@
+consumer:
+  host: localhost
+  username: fiubrother
+  password: alwayswatching
+  queue: analyzed_video_chunks
+publisher:
+  host: localhost
+  username: fiubrother
+  password: alwayswatching
+  exchange: fiubrother
+  routing_key: processed_video_chunks
+interpolation:
+  db:
+    host: localhost
+    name: big_fiubrother
+    user: postgres
+    password: password
