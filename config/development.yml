@@ -15,3 +15,4 @@ interpolation:
     name: big_fiubrother
     user: postgres
     password: password
+  tmp_path: tmp

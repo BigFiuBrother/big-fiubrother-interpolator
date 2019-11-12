@@ -1,3 +1,3 @@
-from big_fiubrother_interpolator.fetch_video_chunk import FetchVideoChunk
-from big_fiubrother_interpolator.fetch_bounding_boxes import FetchBoundingBoxes
+from big_fiubrother_interpolator.fetch_video_data import FetchVideoData
+from big_fiubrother_interpolator.store_video_in_file_system import StoreVideoInFileSystem
 from big_fiubrother_interpolator.interpolate_video import InterpolateVideo 
