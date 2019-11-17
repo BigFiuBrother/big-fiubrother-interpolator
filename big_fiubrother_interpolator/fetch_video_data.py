@@ -5,7 +5,7 @@ from big_fiubrother_core.db import (
     Frame,
     Face
 )
-from os import path
+from collections import defaultdict
 
 
 class FetchVideoData(QueueTask):
@@ -19,20 +19,27 @@ class FetchVideoData(QueueTask):
         self.db = Database(self.configuration['db'])
 
     def execute_with(self, message):
-        video_chunk = self.db.session.query(VideoChunk)
-                                     .get(message.video_chunk_id)
-
-        frames_with_faces = (
+        video_chunk = (
             self.db.session
-            .query(Frame, Face)
+            .query(VideoChunk)
+            .get(message.video_chunk_id)
+        )
+
+        faces_with_offset = (
+            self.db.session
+            .query(Frame.offset, Face)
             .filter(Frame.video_chunk_id == message.video_chunk_id)
-            .join(Face)
-            .group_by(Frame.offset)
+            .filter(Frame.id == Face.frame_id)
             .order_by(Frame.offset)
             .all()
         )
 
-        self.output_queue({
-            'frames_with_faces': frames_with_faces,
+        faces_by_offset = defaultdict(list)
+
+        for offset, face in faces_with_offset:
+            faces_by_offset[offset].append(face)
+
+        self.output_queue.put({
+            'faces_by_offset': faces_by_offset,
             'video_chunk': video_chunk
         })
