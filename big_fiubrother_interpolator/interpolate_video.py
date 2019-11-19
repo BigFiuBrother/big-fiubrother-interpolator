@@ -1,6 +1,5 @@
 from big_fiubrother_core import QueueTask
-from queue import deque
-import cv2
+from . import InterpolationIterator
 import os
 
 
@@ -15,24 +14,11 @@ class InterpolateVideo(QueueTask):
         self.db = Database(self.configuration['db'])
 
     def execute_with(self, message):
-        cap = cv2.VideoCapture(message['filepath'])
+        iterator = InterpolationIterator(
+            video_path=message['filepath'], 
+            faces_by_offset=message['faces_by_offset'])
 
-        queue = deque(message['frames_with_faces'].keys())
-        offset = 0
-        faces = None
-
-        while True:
-            if offset == queue.index(0):
-                faces = queue.popleft()
-                
-            ret, frame = cap.read()
-
-            if ret:
-                #TODO: Process video
-                offset += 1
-            else:
-                break
-
-        cap.release()
-
+        for frame, faces in iterator:
+            #TODO: process video
+            
         os.remove(message['filepath'])

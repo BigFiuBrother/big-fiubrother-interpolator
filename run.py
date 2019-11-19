@@ -63,6 +63,7 @@ if __name__ == "__main__":
     bounding_boxes_retriever.stop()
     video_interpolator.stop()
     publisher.stop()
+    
     video_chunk_retriever.wait()
     bounding_boxes_retriever.wait()
     video_interpolator.wait()
