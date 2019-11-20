@@ -1,5 +1,9 @@
 from big_fiubrother_core import QueueTask
-from . import InterpolationIterator
+from . import (
+    InterpolationIterator,
+    VideoBuilder,
+    FrameEditor
+)
 import os
 
 
@@ -12,13 +16,36 @@ class InterpolateVideo(QueueTask):
 
     def init(self):
         self.db = Database(self.configuration['db'])
+        self.tmp_path = self.configuration['tmp_path']
 
     def execute_with(self, message):
+        video_capture = cv2.VideoCapture(message['filepath'])
+
         iterator = InterpolationIterator(
-            video_path=message['filepath'], 
+            video_capture=video_capture,
             faces_by_offset=message['faces_by_offset'])
 
+        video_builder = VideoBuilder(
+            width=int(video_capture.get(3)),
+            height=int(video_capture.get(4)),
+            fps=self.configuration['interpolation_fps']
+        )
+
+        frame_editor = FrameEditor()
+
         for frame, faces in iterator:
-            #TODO: process video
-            
+            new_frame = frame_editor.edit(frame, faces)
+            video_builder.add_frame(new_frame)
+
         os.remove(message['filepath'])
+
+        video_chunk = message['video_chunk']
+
+        filepath = path.join(
+            self.tmp_path,
+            '{}.mp4'.format(video_chunk.filename))
+
+        self.output_queue.put((
+            video_chunk.id,
+            video_builder.build(filepath)
+        ))
