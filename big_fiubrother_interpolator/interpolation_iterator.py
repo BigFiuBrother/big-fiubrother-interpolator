@@ -4,8 +4,8 @@ from queue import deque
 
 class InterpolationIterator:
 
-    def __init__(self, video_path, faces_by_offset):
-        self.video_iterator = VideoIterator(video_path)
+    def __init__(self, video_capture, faces_by_offset):
+        self.video_iterator = VideoIterator(video_capture)
         self.faces_by_offset = faces_by_offset
 
     def __iter__(self):
