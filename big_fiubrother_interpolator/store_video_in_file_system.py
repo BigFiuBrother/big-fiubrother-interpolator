@@ -17,7 +17,9 @@ class StoreVideoInFileSystem(QueueTask):
 
     def execute_with(self, message):
         video_chunk = message['video_chunk']
-        filepath = path.join(self.tmp_path, video_chunk.filename)
+        filepath = path.join(
+            self.tmp_path, 
+            '{}.h264'.format(video_chunk.filename))
 
         with open(filepath, 'wb') as file:
             file.write(video_chunk.payload)
