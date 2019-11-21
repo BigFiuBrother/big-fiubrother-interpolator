@@ -43,3 +43,6 @@ class FetchVideoData(QueueTask):
             'faces_by_offset': faces_by_offset,
             'video_chunk': video_chunk
         })
+
+    def close(self):
+        self.db.close()
