@@ -43,7 +43,7 @@ class InterpolateVideo(QueueTask):
 
         filepath = path.join(
             self.tmp_path,
-            '{}.mp4'.format(video_chunk.filename))
+            '{}.mp4'.format(video_chunk.filename()))
 
         self.output_queue.put((
             video_chunk,
