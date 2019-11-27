@@ -11,8 +11,8 @@ publisher:
   routing_key: processed_video_chunks
 db:
   host: localhost
-  name: big_fiubrother
-  user: postgres
+  database: big_fiubrother
+  username: postgres
   password: password
 tmp_path: tmp
 interpolation_fps: 24
