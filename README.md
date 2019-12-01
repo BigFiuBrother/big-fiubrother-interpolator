@@ -11,7 +11,7 @@ In order to install big-fiubrother-interpolator, a virtual environment is recomm
 
 ```
 python3 -m venv big-fiubrother-interpolator-venv
-source big-fiubrother-sampler-venv/bin/activate
+source big-fiubrother-interpolator-venv/bin/activate
 ```
 
 To install all the dependencies, execute the following command: 
