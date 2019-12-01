@@ -16,7 +16,7 @@ class FetchVideoData(QueueTask):
         self.configuration = configuration
 
     def init(self):
-        self.db = Database(self.configuration['db'])
+        self.db = Database(self.configuration)
 
     def execute_with(self, message):
         video_chunk = (

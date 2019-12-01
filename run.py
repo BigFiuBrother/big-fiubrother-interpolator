@@ -28,7 +28,7 @@ def fetch_video(configuration, interprocess_queue):
                             output_queue=consumer_to_fetch_data_queue))
 
     video_data_retriever = StoppableThread(
-        FetchVideoData(configuration=configuration,
+        FetchVideoData(configuration=configuration['db'],
                        input_queue=consumer_to_fetch_data_queue,
                        output_queue=fetch_data_to_store_video_queue))
 

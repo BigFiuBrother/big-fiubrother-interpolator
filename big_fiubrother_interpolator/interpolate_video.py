@@ -15,7 +15,6 @@ class InterpolateVideo(QueueTask):
         self.configuration = configuration
 
     def init(self):
-        self.db = Database(self.configuration['db'])
         self.tmp_path = self.configuration['tmp_path']
 
     def execute_with(self, message):
