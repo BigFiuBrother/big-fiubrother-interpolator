@@ -4,6 +4,8 @@ from . import (
     VideoBuilder,
     FrameEditor
 )
+from uuid import uuid4 as uuid
+import cv2
 import os
 
 
@@ -24,7 +26,12 @@ class InterpolateVideo(QueueTask):
             video_capture=video_capture,
             faces_by_offset=message['faces_by_offset'])
 
+        interpolated_video_filepath = os.path.join(
+            self.tmp_path,
+            '{}'.format(message['timestamp']))
+
         video_builder = VideoBuilder(
+            filename=os.path.join(self.tmp_path, str(uuid())),
             width=int(video_capture.get(3)),
             height=int(video_capture.get(4)),
             fps=self.configuration['interpolation_fps']
@@ -36,15 +43,9 @@ class InterpolateVideo(QueueTask):
             new_frame = frame_editor.edit(frame, faces)
             video_builder.add_frame(new_frame)
 
+        video_builder.release()
+
         os.remove(message['filepath'])
+        message['filepath'] = video_builder.filepath
 
-        video_chunk = message['video_chunk']
-
-        filepath = path.join(
-            self.tmp_path,
-            '{}.mp4'.format(video_chunk.filename()))
-
-        self.output_queue.put((
-            video_chunk,
-            video_builder.build(filepath)
-        ))
+        self.output_queue.put(message)

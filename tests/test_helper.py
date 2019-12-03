@@ -6,7 +6,7 @@ import yaml
 
 
 def configuration():
-    with open(path.join(path.dirname(__file__), 'config', 'test.yml')) as file:
+    with open(path.join('config', 'test.yml')) as file:
         return yaml.safe_load(file)
 
 

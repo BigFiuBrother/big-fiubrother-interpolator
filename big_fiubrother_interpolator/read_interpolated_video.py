@@ -11,21 +11,20 @@ class ReadInterpolatedVideo(QueueTask):
         self.storage_queue = storage_queue
 
     def execute_with(self, message):
-        raw_video_chunk, filepath = message
-
-        with open(filepath, 'rb') as file:
+        with open(message['filepath'], 'rb') as file:
             interpolated_video_chunk = file.read()
 
         video_chunk_message = VideoChunkMessage(
-            camera_id=raw_video_chunk.camera_id,
-            timestamp=raw_video_chunk.timestamp,
+            camera_id=message['camera_id'],
+            timestamp=message['timestamp'],
             payload=interpolated_video_chunk)
 
+        print(VideoChunkMessage)
         self.publisher_queue.put(video_chunk_message)
 
         self.storage_queue.put((
-            video_chunk.id,
+            message['video_chunk_id'],
             interpolated_video_chunk
         ))
 
-        os.remove(filepath)
+        os.remove(message['filepath'])

@@ -9,7 +9,7 @@ class FrameEditor:
         self.known_face_color = (36, 255, 12)
         self.unknown_face_color = (255, 36, 12)
 
-    def edit(frame, faces):
+    def edit(self, frame, faces):
         for face in faces:
             if face.is_match:
                 color = self.known_face_color
@@ -28,10 +28,11 @@ class FrameEditor:
                                   color,
                                   self.line_thickness)
 
-            cv2.putText(frame,
-                        label,
-                        (top_left[0], top_left[1] - self.label_separation),
-                        cv2.FONT_HERSHEY_SIMPLEX,
-                        self.color)
+            cv2.putText(img=frame,
+                        text=label,
+                        org=(top_left[0], top_left[1] - self.label_separation),
+                        fontFace=cv2.FONT_HERSHEY_SIMPLEX,
+                        fontScale=1,
+                        color=color)
 
         return frame

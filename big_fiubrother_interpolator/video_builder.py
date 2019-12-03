@@ -3,22 +3,15 @@ import cv2
 
 class VideoBuilder:
 
-    def __init__(self, witdh, height, fps):
-        self.frames = []
-        self.width = width
-        self.height = height
-        self.fps = fps
+    def __init__(self, filename, width, height, fps):
+        self.filepath = '{}.mp4'.format(filename)
+        self.video_writer = cv2.VideoWriter(self.filepath,
+                                            cv2.VideoWriter_fourcc(*'mp4v'),
+                                            fps,
+                                            (width, height))
 
     def add_frame(self, frame):
-        self.frames.append(frame)
+        self.video_writer.write(frame)
 
-    def build(self, filename):
-        video_writer = cv2.VideoWriter('{}.mp4'.format(filename),
-                                       cv2.VideoWriter_fourcc(*'mp4v'),
-                                       self.fps,
-                                       (self.width, self.height))
-
-        for frame in self.frames:
-            video_writer.write(frame)
-
-        video_writer.release()
+    def release(self):
+        self.video_writer.release()

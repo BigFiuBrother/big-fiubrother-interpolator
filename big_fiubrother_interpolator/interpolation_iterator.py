@@ -9,12 +9,12 @@ class InterpolationIterator:
         self.faces_by_offset = faces_by_offset
 
     def __iter__(self):
-        self.all_faces = deque(faces_by_offset.items())
+        self.all_faces = deque(self.faces_by_offset.items())
         self.faces_offset, self.faces = self.all_faces.popleft()
         return self
 
     def __next__(self):
-        offset, frame = self.video_iterator.next()
+        offset, frame = next(self.video_iterator)
 
         if len(self.all_faces) > 0 and offset >= self.faces_offset:
             self.faces_offset, self.faces = self.all_faces.popleft()
