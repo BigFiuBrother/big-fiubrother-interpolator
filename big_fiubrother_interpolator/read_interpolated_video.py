@@ -19,7 +19,6 @@ class ReadInterpolatedVideo(QueueTask):
             timestamp=message['timestamp'],
             payload=interpolated_video_chunk)
 
-        print(VideoChunkMessage)
         self.publisher_queue.put(video_chunk_message)
 
         self.storage_queue.put((
