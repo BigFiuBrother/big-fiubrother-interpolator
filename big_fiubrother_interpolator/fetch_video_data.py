@@ -3,7 +3,8 @@ from big_fiubrother_core.db import (
     Database,
     VideoChunk,
     Frame,
-    Face
+    Face,
+    Person
 )
 from collections import defaultdict
 
@@ -27,17 +28,18 @@ class FetchVideoData(QueueTask):
 
         faces_with_offset = (
             self.db.session
-            .query(Frame.offset, Face)
+            .query(Frame.offset, Face, Person)
             .filter(Frame.video_chunk_id == message.video_chunk_id)
             .filter(Frame.id == Face.frame_id)
+            .filter(Face.classification_id == Person.id)
             .order_by(Frame.offset)
             .all()
         )
 
         faces_by_offset = defaultdict(list)
 
-        for offset, face in faces_with_offset:
-            faces_by_offset[offset].append(face)
+        for offset, face, person in faces_with_offset:
+            faces_by_offset[offset].append((face, person))
 
         self.output_queue.put({
             'faces_by_offset': faces_by_offset,

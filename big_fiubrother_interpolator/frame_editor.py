@@ -10,14 +10,15 @@ class FrameEditor:
         self.unknown_face_color = (255, 36, 12)
 
     def edit(self, frame, faces):
-        for face in faces:
+        for face, person in faces:
             if face.is_match:
                 color = self.known_face_color
-                label = 'CONOCIDO({} %)'.format(
+                label = '{} ({} %)'.format(
+                    person.name.upper(),
                     face.probability_classification * 100)
             else:
                 color = self.unknown_face_color
-                label = 'DESCONOCIDO'
+                label = 'UNKNOWN'
 
             top_left, bottom_right = [tuple(point)
                                       for point in face.bounding_box]
