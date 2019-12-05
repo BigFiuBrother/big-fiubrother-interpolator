@@ -16,7 +16,10 @@ class InterpolationIterator:
     def __next__(self):
         offset, frame = next(self.video_iterator)
 
-        if len(self.all_faces) > 0 and offset >= self.faces_offset:
-            self.faces_offset, self.faces = self.all_faces.popleft()
+        if len(self.all_faces) > 0:
+            next_offset, _ = self.all_faces[0]
+
+            if offset >= next_offset:
+                self.faces_offset, self.faces = self.all_faces.popleft()
 
         return frame, self.faces
