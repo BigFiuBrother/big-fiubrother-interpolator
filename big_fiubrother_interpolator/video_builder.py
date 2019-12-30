@@ -6,7 +6,7 @@ class VideoBuilder:
     def __init__(self, filename, width, height, fps):
         self.filepath = '{}.mp4'.format(filename)
         self.video_writer = cv2.VideoWriter(self.filepath,
-                                            cv2.VideoWriter_fourcc(*'mp4v'),
+                                            cv2.VideoWriter_fourcc(*'avc1'),
                                             fps,
                                             (width, height))
 
