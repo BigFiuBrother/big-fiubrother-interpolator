@@ -4,51 +4,41 @@ import queue
 import signal
 import multiprocessing
 from big_fiubrother_core import (
-    SignalHandler,
     StoppableThread,
-    PublishToRabbitMQ,
     ConsumeFromRabbitMQ,
-    setup
+    setup,
+    run
 )
 from big_fiubrother_interpolator import (
     FetchVideoData,
-    StoreVideoInFileSystem,
+    FetchVideoChunk,
     InterpolateVideo,
-    ReadInterpolatedVideo,
-    StoreInterpolatedVideoInDB
+    StoreProcessedVideo,
+    NotifyProcessedVideo
 )
 
 
 def fetch_video(configuration, interprocess_queue):
-    consumer_to_fetch_data_queue = queue.Queue()
-    fetch_data_to_store_video_queue = queue.Queue()
-
+    queue_1 = queue.Queue()
+    
     consumer = StoppableThread(
         ConsumeFromRabbitMQ(configuration=configuration['consumer'],
-                            output_queue=consumer_to_fetch_data_queue))
+                            output_queue=queue_1))
+
+    queue_2 = queue.Queue()
 
     video_data_retriever = StoppableThread(
-        FetchVideoData(configuration=configuration['db'],
-                       input_queue=consumer_to_fetch_data_queue,
-                       output_queue=fetch_data_to_store_video_queue))
+        FetchVideoData(configuration=configuration,
+                       input_queue=queue_1,
+                       output_queue=queue_2))
 
-    file_system_video_storage = StoppableThread(
-        StoreVideoInFileSystem(configuration=configuration,
-                               input_queue=fetch_data_to_store_video_queue,
-                               output_queue=interprocess_queue))
+    video_chunk_retriever = StoppableThread(
+        FetchVideoChunk(configuration=configuration,
+                        input_queue=queue_2,
+                        output_queue=interprocess_queue))
 
-    signal_handler = SignalHandler(callback=consumer.stop)
-
-    file_system_video_storage.start()
-    video_data_retriever.start()
-    consumer.run()
-
-    # Signal STOP received!
-    video_data_retriever.stop()
-    file_system_video_storage.stop()
-
-    video_data_retriever.wait()
-    file_system_video_storage.wait()
+    run(processes=[video_data_retriever, video_chunk_retriever],
+        main_process=consumer)
 
 
 def interpolate_video(configuration, input_queue, output_queue):
@@ -57,44 +47,25 @@ def interpolate_video(configuration, input_queue, output_queue):
                          input_queue=input_queue,
                          output_queue=output_queue))
 
-    signal_handler = SignalHandler(callback=video_interpolator.stop)
-
-    video_interpolator.run()
+    run(main_process=video_interpolator)
 
 
 def publish_video(configuration, interprocess_queue):
-    reader_to_storage_queue = queue.Queue()
-    reader_to_publisher_queue = queue.Queue()
+    queue_1 = queue.Queue()
 
-    video_reader = StoppableThread(
-        ReadInterpolatedVideo(input_queue=interprocess_queue,
-                              publisher_queue=reader_to_publisher_queue,
-                              storage_queue=reader_to_storage_queue
-                              ))
+    storage_task = StoppableThread(
+        StoreProcessedVideo(configuration=configuration,
+                            input_queue=interprocess_queue,
+                            output_queue=queue_1))
 
-    db_storage = StoppableThread(
-        StoreInterpolatedVideoInDB(configuration=configuration,
-                                   input_queue=reader_to_storage_queue))
+    notify_task = StoppableThread(
+        NotifyProcessedVideo(configuration=configuration, input_queue=queue_1))
 
-    publisher = StoppableThread(
-        PublishToRabbitMQ(configuration=configuration['publisher'],
-                          input_queue=reader_to_publisher_queue))
-
-    signal_handler = SignalHandler(
-        processes=[video_reader, db_storage, publisher])
-
-    publisher.start()
-    db_storage.start()
-    video_reader.start()
-
-    video_reader.wait()
-    db_storage.wait()
-    publisher.wait()
+    run(processes=[storage_task, notify_task])
 
 
 if __name__ == "__main__":
-    configuration = setup(
-        application_name='Big Fiubrother Interpolation Application')
+    configuration = setup(application_name='Big Fiubrother Interpolation Application')
 
     print('[*] Configuring big-fiubrother-interpolator')
 

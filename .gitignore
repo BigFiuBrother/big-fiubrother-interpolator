@@ -1,6 +1,7 @@
 big-fiubrother-interpolator-venv/
 big_fiubrother_interpolator/**/__pycache__
 tests/**/__pycache__
+tests/resources/output.mp4
 big_fiubrother_interpolator.egg-info/
 dist/
 build/

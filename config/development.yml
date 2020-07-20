@@ -12,7 +12,13 @@ publisher:
 db:
   host: localhost
   database: big_fiubrother
-  username: postgres
-  password: password
-tmp_path: tmp
+  username: fiubrother
+  password: alwayswatching
+synchronization:
+  host: localhost
+  port: 2181
+storage:
+  host: localhost
+  access_key: fiubrother
+  secret_key: alwayswatching
 interpolation_fps: 24
