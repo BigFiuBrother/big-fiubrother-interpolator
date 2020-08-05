@@ -8,6 +8,6 @@ class NotifyProcessedVideo(QueueTask):
         super().__init__(input_queue)
         self.configuration = configuration
 
-    def execute_with(self, video_chunk_id):
+    def execute_with(self, message):
         post(self.configuration['web_server_host'],
-            json={'video_chunk_id': video_chunk_id})
+            json=message)

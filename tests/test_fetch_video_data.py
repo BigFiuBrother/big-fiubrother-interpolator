@@ -10,6 +10,7 @@ from big_fiubrother_core.messages import (
 from big_fiubrother_interpolator import (
     FetchVideoData
 )
+from big_fiubrother_core.synchronization import ProcessSynchronizer
 from queue import Queue
 import test_helper
 import unittest
@@ -23,10 +24,13 @@ class TestFetchVideoData(unittest.TestCase):
         self.db.truncate_all()
 
         video_chunk = VideoChunk(camera_id='CAMERA_ID',
-                                 timestamp=1.0,
-                                 payload=b'asd')
+                                 timestamp=1.0)
 
         self.db.add(video_chunk)
+
+        self.synchronizer = ProcessSynchronizer(self.configuration['synchronization'])
+
+        self.synchronizer.register_video_task(video_chunk.id)
 
         frame = Frame(offset=0,
                       video_chunk_id=video_chunk.id)
@@ -68,7 +72,6 @@ class TestFetchVideoData(unittest.TestCase):
         video_chunk = output_message['video_chunk']
         self.assertEqual(video_chunk.camera_id, 'CAMERA_ID')
         self.assertEqual(video_chunk.timestamp, 1.0)
-        self.assertEqual(video_chunk.payload, b'asd')
 
         faces_by_offset = output_message['faces_by_offset']
         self.assertEqual([*faces_by_offset.keys()], [0])

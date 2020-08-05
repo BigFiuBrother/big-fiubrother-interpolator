@@ -1,18 +1,19 @@
-consumer:
-  host: localhost
-  username: fiubrother
-  password: alwayswatching
-  queue: analysed_video_chunks
 publisher:
   host: localhost
   username: fiubrother
   password: alwayswatching
   exchange: fiubrother
-  routing_key: interpolated_video_chunks
+  routing_key: analysed_video_chunks
 db:
   host: localhost
-  database: big_fiubrother_test
-  username: postgres
-  password: password
-tmp_path: tmp
-interpolation_fps: 24
+  database: big_fiubrother
+  username: fiubrother
+  password: alwayswatching
+synchronization:
+  host: localhost
+  port: 2181
+storage:
+  host: localhost
+  port: 9000
+  access_key: fiubrother
+  secret_key: alwayswatching

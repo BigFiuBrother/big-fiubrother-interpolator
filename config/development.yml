@@ -3,12 +3,6 @@ consumer:
   username: fiubrother
   password: alwayswatching
   queue: analysed_video_chunks
-publisher:
-  host: localhost
-  username: fiubrother
-  password: alwayswatching
-  exchange: fiubrother
-  routing_key: interpolated_video_chunks
 db:
   host: localhost
   database: big_fiubrother
@@ -19,6 +13,8 @@ synchronization:
   port: 2181
 storage:
   host: localhost
+  port: 9000
   access_key: fiubrother
   secret_key: alwayswatching
 interpolation_fps: 24
+web_server_host: http://127.0.0.1:8080/video

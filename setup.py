@@ -5,7 +5,7 @@ with open("README.md", 'r') as f:
 
 setup(
    name='big-fiubrother-interpolator',
-   version='0.1.2',
+   version='0.2.0.1',
    description='Big Fiubrother Face Video Interpolator',
    license="GPLv3",
    long_description=long_description,

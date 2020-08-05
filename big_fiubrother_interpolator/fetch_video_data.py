@@ -29,31 +29,13 @@ class FetchVideoData(QueueTask):
             logging.debug(f"{message.video_chunk_id} has not finished processing. {remaining_tasks} tasks remaining!")
             return
 
-        video_chunk = (
-            self.db.session
-            .query(VideoChunk)
+        video_chunk = self.db.session.query(VideoChunk)
+            .options(joinedload(VideoChunk.frames)
+                .joinedload(Frame.faces)
+                .joinedload(Face.person))
             .get(message.video_chunk_id)
-        )
 
-        faces_with_offset = (
-            self.db.session
-            .query(Frame.offset, Face, Person)
-            .filter(Frame.video_chunk_id == message.video_chunk_id)
-            .filter(Frame.id == Face.frame_id)
-            .filter(Face.classification_id == Person.id)
-            .order_by(Frame.offset)
-            .all()
-        )
-
-        faces_by_offset = defaultdict(list)
-
-        for offset, face, person in faces_with_offset:
-            faces_by_offset[offset].append((face, person))
-
-        self.output_queue.put({
-            'faces_by_offset': faces_by_offset,
-            'video_chunk': video_chunk
-        })
+        self.output_queue.put(video_chunk)
 
     def close(self):
         self.db.close()

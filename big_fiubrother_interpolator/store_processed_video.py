@@ -17,12 +17,16 @@ class StoreProcessedVideo(QueueTask):
     def execute_with(self, message):
         video_chunk = message['video_chunk']
 
-        self.storage.store_file(video_chunk.id, message['filepath'])
+        self.storage.store_file('{}.mp4'.format(video_chunk.id), message['filepath'])
 
         video_chunk.processed = True
+        
         self.db.update()
 
-        self.output_queue.put(video_chunk.id)
+        self.output_queue.put({
+            'video_chunk_id': video_chunk.id,
+            'timestamp': video_chunk.timestamp
+        })
 
     def close(self):
         self.db.close()

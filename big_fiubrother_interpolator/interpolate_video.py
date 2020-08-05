@@ -21,7 +21,7 @@ class InterpolateVideo(QueueTask):
 
         iterator = InterpolationIterator(
             video_capture=video_capture,
-            faces_by_offset=message['faces_by_offset'])
+            frames=message['video_chunk'].frames)
 
         video_builder = VideoBuilder(
             filename=os.path.join('tmp', str(uuid())),
