@@ -8,6 +8,7 @@ from big_fiubrother_core.db import (
 )
 from big_fiubrother_core.synchronization import ProcessSynchronizer
 from collections import defaultdict
+from sqlalchemy.orm import joinedload
 import logging
 
 
@@ -29,13 +30,13 @@ class FetchVideoData(QueueTask):
             logging.debug(f"{message.video_chunk_id} has not finished processing. {remaining_tasks} tasks remaining!")
             return
 
-        video_chunk = self.db.session.query(VideoChunk)
-            .options(joinedload(VideoChunk.frames)
-                .joinedload(Frame.faces)
-                .joinedload(Face.person))
-            .get(message.video_chunk_id)
+        video_chunk = self.fetch_video_chunk(message.video_chunk_id)
 
         self.output_queue.put(video_chunk)
+
+    def fetch_video_chunk(self, id):
+        options = joinedload(VideoChunk.frames).joinedload(Frame.faces).joinedload(Face.person)
+        return self.db.session.query(VideoChunk).options(options).get(id)
 
     def close(self):
         self.db.close()

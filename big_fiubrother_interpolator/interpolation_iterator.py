@@ -6,10 +6,10 @@ class InterpolationIterator:
 
     def __init__(self, video_capture, frames_metadata):
         self.video_iterator = VideoIterator(video_capture)
-        self.frames_metadata = frames_metadata
+        self.frames_metadata = sorted(frames_metadata, key=lambda frame: frame.offset)
 
     def __iter__(self):
-        self.frames_metadata_queue = deque(frames)
+        self.frames_metadata_queue = deque(self.frames_metadata)
         self.current_frame_metadata = None
         return self
 

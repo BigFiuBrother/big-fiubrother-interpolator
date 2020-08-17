@@ -7,7 +7,7 @@ class FrameEditor:
         self.label_separation = 10
         self.line_thickness = 5
         self.known_face_color = (36, 255, 12)
-        self.unknown_face_color = (255, 36, 12)
+        self.unknown_face_color = (12, 36, 255)
 
     def edit(self, frame, faces):
         for face in faces:
