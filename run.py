@@ -6,7 +6,7 @@ import multiprocessing
 from big_fiubrother_core import (
     StoppableThread,
     ConsumeFromRabbitMQ,
-    setup,
+    runtime_context,
     run
 )
 from big_fiubrother_interpolator import (
@@ -65,37 +65,36 @@ def publish_video(configuration, interprocess_queue):
 
 
 if __name__ == "__main__":
-    configuration = setup(application_name='Big Fiubrother Interpolation Application')
+    with runtime_context('Big Fiubrother Interpolation Application') as configuration:
+        print('[*] Configuring big-fiubrother-interpolator')
 
-    print('[*] Configuring big-fiubrother-interpolator')
+        fetch_to_interpolate_queue = multiprocessing.Queue()
+        interpolate_to_publish_queue = multiprocessing.Queue()
 
-    fetch_to_interpolate_queue = multiprocessing.Queue()
-    interpolate_to_publish_queue = multiprocessing.Queue()
+        fetch_process = multiprocessing.Process(
+            target=fetch_video,
+            args=(configuration, fetch_to_interpolate_queue))
 
-    fetch_process = multiprocessing.Process(
-        target=fetch_video,
-        args=(configuration, fetch_to_interpolate_queue))
+        interpolate_process = multiprocessing.Process(
+            target=interpolate_video,
+            args=(configuration,
+                  fetch_to_interpolate_queue,
+                  interpolate_to_publish_queue))
 
-    interpolate_process = multiprocessing.Process(
-        target=interpolate_video,
-        args=(configuration,
-              fetch_to_interpolate_queue,
-              interpolate_to_publish_queue))
+        store_process = multiprocessing.Process(
+            target=publish_video,
+            args=(configuration, interpolate_to_publish_queue))
 
-    store_process = multiprocessing.Process(
-        target=publish_video,
-        args=(configuration, interpolate_to_publish_queue))
+        signal.signal(signal.SIGINT, signal.SIG_IGN)
 
-    signal.signal(signal.SIGINT, signal.SIG_IGN)
+        print('[*] Configuration finished. Starting big-fiubrother-interpolator!')
 
-    print('[*] Configuration finished. Starting big-fiubrother-interpolator!')
+        fetch_process.start()
+        interpolate_process.start()
+        store_process.start()
 
-    fetch_process.start()
-    interpolate_process.start()
-    store_process.start()
+        fetch_process.join()
+        interpolate_process.join()
+        store_process.join()
 
-    fetch_process.join()
-    interpolate_process.join()
-    store_process.join()
-
-    print('[*] big-fiubrother-interpolator stopped!')
+        print('[*] big-fiubrother-interpolator stopped!')

@@ -13,8 +13,11 @@ synchronization:
   port: 2181
 storage:
   host: localhost
-  port: 9000
+  port: 9500
   access_key: fiubrother
   secret_key: alwayswatching
+logging:
+  host: localhost
+  port: 12201
 interpolation_fps: 24
 web_server_host: http://127.0.0.1:8080/video
