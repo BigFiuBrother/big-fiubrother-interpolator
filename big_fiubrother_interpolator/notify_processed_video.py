@@ -11,3 +11,5 @@ class NotifyProcessedVideo(QueueTask):
     def execute_with(self, message):
         post(self.configuration['web_server_host'],
             json=message)
+
+        logging.debug("Sent {} to web server".format(message['video_chunk_id']))

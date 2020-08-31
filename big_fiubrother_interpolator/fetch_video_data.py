@@ -6,8 +6,6 @@ from big_fiubrother_core.db import (
     Face,
     Person
 )
-from big_fiubrother_core.synchronization import ProcessSynchronizer
-from collections import defaultdict
 from sqlalchemy.orm import joinedload
 import logging
 
@@ -21,12 +19,11 @@ class FetchVideoData(QueueTask):
 
     def init(self):
         self.db = Database(self.configuration['db'])
-        self.synchronizer = ProcessSynchronizer(self.configuration['synchronization'])
 
     def execute_with(self, message):
-        logging.debug(f"Starting to process video_chunk {video_chunk_id}")
+        video_chunk_id = message.video_chunk_id
 
-        self.synchronizer.complete_video_task(video_chunk_id)
+        logging.debug(f"Starting to process video_chunk {video_chunk_id}")
 
         video_chunk = self.fetch_video_chunk(video_chunk_id)
 
