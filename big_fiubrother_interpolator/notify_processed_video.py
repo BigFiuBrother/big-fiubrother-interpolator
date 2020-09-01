@@ -1,5 +1,6 @@
 from big_fiubrother_core import QueueTask
 from requests import post
+import logging
 
 
 class NotifyProcessedVideo(QueueTask):
@@ -12,4 +13,4 @@ class NotifyProcessedVideo(QueueTask):
         post(self.configuration['web_server_host'],
             json=message)
 
-        logging.debug("Sent {} to web server".format(message['video_chunk_id']))
+        logging.info("Sent {} to web server".format(message['video_chunk_id']))

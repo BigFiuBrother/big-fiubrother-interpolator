@@ -23,8 +23,6 @@ class FetchVideoData(QueueTask):
     def execute_with(self, message):
         video_chunk_id = message.video_chunk_id
 
-        logging.debug(f"Starting to process video_chunk {video_chunk_id}")
-
         video_chunk = self.fetch_video_chunk(video_chunk_id)
 
         self.output_queue.put(video_chunk)
