@@ -41,5 +41,6 @@ class InterpolateVideo(QueueTask):
         os.remove(message['filepath'])
         
         message['filepath'] = video_builder.filepath
+        message['duration'] = video_builder.duration()
 
         self.output_queue.put(message)
