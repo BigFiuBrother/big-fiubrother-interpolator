@@ -25,7 +25,7 @@ class StoreProcessedVideo(QueueTask):
 
         self.output_queue.put({
             'video_chunk_id': video_chunk.id,
-            'timestamp': video_chunk.timestamp
+            'timestamp': video_chunk.timestamp,
             'duration': message['duration']
         })
 
